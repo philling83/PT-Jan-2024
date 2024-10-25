@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+
+  vote:
+    image: dockersamples/examplevotingapp_vote:before	
+    networks:
+      - frontend
+    ports: 
+      - 5000:80
+
+
+  result: 
+    image: dockersamples/examplevotingapp_result:before	
+    networks:
+      - backend
+    ports: 
+      - 5001:80
+
+
+  worker: 
+    image: dockersamples/examplevotingapp_worker	
+    depends_on:
+      - 'redis'
+    networks:
+      - frontend
+      - backend
+
+  redis: 
+    image: redis:3.2	
+    networks:
+      - frontend
+
+  db:
+    image: postgres:9.4	
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    networks:
+      - backend  
+
+networks:
+  backend:
+  frontend:
+
+volumes:
+  db-data:        
